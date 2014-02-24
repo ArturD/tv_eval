@@ -1,5 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{run}}</h1>
 
+<h2>Overall</h2>
 <table>
   <thead>
     <tr>
@@ -10,27 +14,58 @@
   </thead>
   <tbody>
     <tr>
-      <td>all</td>
+      <td>All</td>
       <td>{{run.stats_all}}</td>
       <td>{{run.stats_all_percent}} %</td>
     </tr>
     <tr>
-      <td>has result</td>
+      <td>Has Result</td>
       <td>{{run.stats_has_result}}</td>
       <td>{{run.stats_has_result_percent}} %</td>
     </tr>
   </tbody>
 </table>
 
+<h2>AQ distribution</h2>
+
+<table>
+  <thead>
+    <tr>
+      <td>Min Article Quality</td>
+      <td>Count</td>
+      <td>Percentage</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for aq, stat in run.stats_article_quality.items %}
+      <tr>
+        <td>&gt;= {{aq}}</td>
+        <td> {{stat.0}}</td>
+        <td> {{stat.1| floatformat:2}} %</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 <h2>Successful Results:</h2>
 <table>
+  <thead>
+    <tr>
+      <td>Series</td>
+      <td>Episode</td>
+      <td>URL</td>
+      <td>AQ</td>
+    </tr>
+  </thead>
   <tbody>
     {% for result in results_with_value %}
     <tr>
       <td>{{result.episode.series_name}}</td>
       <td>{{result.episode.episode_title}}</td>
       <td><a href="{{result.url}}">{{result.url}}</a></td>
+      <td>{{result.article_quality}}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+{% endblock %}

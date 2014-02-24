@@ -27,6 +27,10 @@ class EpisodeQuery(ModelBase):
     if r.status_code == 200:
       m = r.json()
       result = Result(run=run, episode=self, wiki_id=m['wikiId'], page_id=m['articleId'], title=m['title'], url=m['url'], content_url=m['contentUrl'], raw_response=r.text, success=True)
+      try:
+        result.article_quality = get_article_quality(m['wikiId'], m['articleId'])
+      except:
+        pass
       result.save()
     else:
       result = Result(run=run, episode=self,raw_response=r.text)
@@ -80,12 +84,22 @@ class Run(ModelBase):
   def stats_has_result_percent(self):
     return self.get_stats()['has_result_percent']
 
+  def stats_article_quality(self):
+    results = self.result_set.filter(success=True).all()
+    stats = {}
+    for lb in [50, 75, 90, 95, 99]:
+      count = len([x for x in results if lb <= x.article_quality])
+      stats[lb] = (count, 100.0 * count / len(results))
+    return stats
+
+
 class Result(ModelBase):
   episode = models.ForeignKey(EpisodeQuery)
   run = models.ForeignKey(Run)
 
   success = models.BooleanField(default=False)
 
+  article_quality = models.IntegerField(null=True, default=None)
   wiki_id = models.IntegerField(null=True, default=None)
   page_id = models.IntegerField(null=True, default=None)
   title = models.CharField(max_length=50, blank=True, default='')
@@ -99,4 +113,13 @@ class Result(ModelBase):
     else:
       return u'%s: FAIL' % self.episode
 
+def get_article_quality(wid, pid):
+  root_url = 'http://search-s10:8983/solr/main/select'
+  params = {'q': 'id:%s_%s' % (wid, pid), 'fl': 'article_quality_i', 'wt': 'json' }
+  resp = requests.get(root_url, params=params)
+  if resp.status_code == 200:
+    m = resp.json()
+    if m['response'] and m['response']['docs'] and m['response']['docs'][0]:
+      return m['response']['docs'][0]['article_quality_i']
+  return None
 
