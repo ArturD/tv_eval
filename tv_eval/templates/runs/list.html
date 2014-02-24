@@ -1,7 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>Runs</h1>
 
-<ul>
-  {% for run in runs %}
-  <li><a href="{{ run.get_absolute_url }}">{{run}}</a></li>
-  {% endfor %}
-</ul>
+<table>
+  <thead>
+    <tr>
+      <td>Date</td>
+      <td>URL</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for run in runs %}
+    <tr>
+      <td><a href="{{ run.get_absolute_url }}">{{run.created_at}}</a></td>
+      <td><a href="{{ run.get_absolute_url }}">{{run.url}}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
