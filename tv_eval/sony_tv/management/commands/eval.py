@@ -6,5 +6,7 @@ class Command(BaseCommand):
   help = 'Closes the specified poll for voting'
 
   def handle(self, *args, **options):
-    (base_url, comment) = args
-    self.stdout.write('it works!')
+    base_url = args[0]
+    run = Run(url=base_url)
+    run.save()
+    run.run()
