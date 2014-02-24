@@ -8,6 +8,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -81,6 +85,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+LANG='en_US.UTF-8'
+LC_ALL='en_US.UTF-8'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

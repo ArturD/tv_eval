@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import json
 import requests
 from django.db import models
@@ -41,8 +42,43 @@ class Run(ModelBase):
     for eq in EpisodeQuery.objects.all():
       eq.run(self)
 
-  def __str__(self):
-    return "%s, %s" % (self.created_at, self.url)
+  def get_absolute_url(self):
+    from django.core.urlresolvers import reverse
+    return reverse('sony_tv.views.run_details', args=[str(self.id)])
+
+  def __unicode__(self):
+    return u'%s, %s' % (self.created_at, self.url)
+
+  def compute_stats(self):
+    stats = {}
+    results = self.result_set.all()
+    stats['all'] = len(results)
+    stats['all_percent'] = 100
+    stats['has_result'] = len([x for x in results if x.success])
+    stats['has_result_percent'] = round(100.0 * stats['has_result'] / stats['all'], 2)
+    return stats
+
+  def get_stats(self):
+    from django.core.cache import cache
+    key = ('run_stats_%d' % self.pk)
+    #stats = cache.get(key)
+    stats = None
+    if stats == None:
+      stats = self.compute_stats()
+      cache.set(key, stats)
+    return stats
+
+  def stats_all(self):
+    return self.get_stats()['all']
+
+  def stats_all_percent(self):
+    return self.get_stats()['all_percent']
+
+  def stats_has_result(self):
+    return self.get_stats()['has_result']
+
+  def stats_has_result_percent(self):
+    return self.get_stats()['has_result_percent']
 
 class Result(ModelBase):
   episode = models.ForeignKey(EpisodeQuery)
@@ -57,8 +93,10 @@ class Result(ModelBase):
   content_url = models.CharField(max_length=256, blank=True, default='')
   raw_response = models.TextField()
 
-  def __str__(self):
+  def __unicode__(self):
     if self.success:
-      return "%s: %s" % (self.episode, self.url)
+      return u'%s: %s' % (self.episode, self.url)
     else:
-      return "%s: FAIL" % self.episode
+      return u'%s: FAIL' % self.episode
+
+

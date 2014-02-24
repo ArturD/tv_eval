@@ -1,1 +1,7 @@
 <h1>Runs</h1>
+
+<ul>
+  {% for run in runs %}
+  <li><a href="{{ run.get_absolute_url }}">{{run}}</a></li>
+  {% endfor %}
+</ul>
