@@ -90,7 +90,7 @@ class Run(ModelBase):
     for lb in [50, 75, 90, 95, 99]:
       count = len([x for x in results if lb <= x.article_quality])
       stats[lb] = (count, 100.0 * count / len(results))
-    return stats
+    return sorted(stats.items())
 
 
 class Result(ModelBase):
