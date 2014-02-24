@@ -7,4 +7,4 @@ class Command(BaseCommand):
 
   def handle(self, *args, **options):
     (base_url, comment) = args
-    self.stdout.write('it works!');
+    self.stdout.write('it works!')

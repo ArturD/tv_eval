@@ -4,7 +4,7 @@ TYPE_CHOICES = (
       ('te','tv_episode'),
       ('ts','tv_season'),
       (None,'don\'t know'),
-    ),
+    )
 
 class ModelBase(models.Model):
   created_at = models.DateTimeField(auto_now_add=True)
