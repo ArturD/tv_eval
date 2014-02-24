@@ -56,10 +56,16 @@ class Run(ModelBase):
   def compute_stats(self):
     stats = {}
     results = self.result_set.all()
-    stats['all'] = len(results)
-    stats['all_percent'] = 100
-    stats['has_result'] = len([x for x in results if x.success])
-    stats['has_result_percent'] = round(100.0 * stats['has_result'] / stats['all'], 2)
+    if len(results) > 0:
+      stats['all'] = len(results)
+      stats['all_percent'] = 100
+      stats['has_result'] = len([x for x in results if x.success])
+      stats['has_result_percent'] = round(100.0 * stats['has_result'] / stats['all'], 2)
+    else:
+      stats['all'] = '-'
+      stats['all_percent'] = '-'
+      stats['has_result'] = '-'
+      stats['has_result_percent'] = '-'
     return stats
 
   def get_stats(self):
@@ -87,9 +93,10 @@ class Run(ModelBase):
   def stats_article_quality(self):
     results = self.result_set.filter(success=True).all()
     stats = {}
-    for lb in [50, 75, 90, 95, 99]:
-      count = len([x for x in results if lb <= x.article_quality])
-      stats[lb] = (count, 100.0 * count / len(results))
+    if len(results) > 0:
+      for lb in [50, 75, 90, 95, 99]:
+        count = len([x for x in results if lb <= x.article_quality])
+        stats[lb] = (count, 100.0 * count / len(results))
     return sorted(stats.items())
 
 
