@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{run}}</h1>
+<h1>Run Report</h1>
+<b>API:</b> {{run.url}}<br/>
+<b>Date:</b> {{run.created_at}}<br/>
 
 <h2>Overall</h2>
 <table>
