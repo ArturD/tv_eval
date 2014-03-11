@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-import json
 import requests
 from django.db import models
 
@@ -120,6 +118,22 @@ class Result(ModelBase):
     else:
       return u'%s: FAIL' % self.episode
 
+  def evaluation(self):
+    if None not in (self.episode, self.wiki_id, self.page_id):
+      return MatchEvaluation.objects.find_one(self.episode, self.wiki_id, self.page_id)
+    else:
+      return None
+
+  def evaluate(self, wrong_wiki, wrong_page):
+    current = self.evaluation()
+    if current is None:
+      current = MatchEvaluation(episode_query=self.episode, wiki_id=self.wiki_id, page_id=self.page_id, wrong_wiki=wrong_wiki, wrong_page=wrong_page)
+      current.save()
+    else:
+      current.wrong_wiki = wrong_wiki
+      current.wrong_page = wrong_page
+      current.save()
+
 def get_article_quality(wid, pid):
   root_url = 'http://search-s10:8983/solr/main/select'
   params = {'q': 'id:%s_%s' % (wid, pid), 'fl': 'article_quality_i', 'wt': 'json' }
@@ -130,3 +144,36 @@ def get_article_quality(wid, pid):
       return m['response']['docs'][0]['article_quality_i']
   return None
 
+class MatchEvaluationManager(models.Manager):
+  dictionary_cache = None
+
+  @staticmethod
+  def dictionary():
+    if MatchEvaluationManager.dictionary_cache is None:
+      elements = MatchEvaluation.objects.all()
+      MatchEvaluationManager.dictionary_cache = dict([((el.episode_query.pk, el.wiki_id, el.page_id), el) for el in elements])
+    return MatchEvaluationManager.dictionary_cache
+
+
+  def find_one(self, episode_query, wiki_id, page_id):
+    dic = MatchEvaluationManager.dictionary()
+    key = (episode_query.pk, wiki_id, page_id)
+    if key in dic:
+      return dic[key]
+    else:
+      return None
+
+
+class MatchEvaluation(ModelBase):
+  objects = MatchEvaluationManager()
+
+  episode_query = models.ForeignKey(EpisodeQuery)
+  wiki_id = models.IntegerField(null=False)
+  page_id = models.IntegerField(null=False)
+
+  wrong_wiki = models.BooleanField(default=False)
+  wrong_page = models.BooleanField(default=False)
+
+  def save(self, *args, **kwargs):
+    MatchEvaluationManager.dictionary_cache = None
+    super(MatchEvaluation, self).save(*args, **kwargs)
