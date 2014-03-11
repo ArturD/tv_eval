@@ -34,6 +34,13 @@ TEMPLATE_DIRS = (
     BASE_DIR + '/templates/'
 )
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/tmp/tv_eval_django_cache',
+    }
+}
+
 # Application definition
 
 INSTALLED_APPS = (
