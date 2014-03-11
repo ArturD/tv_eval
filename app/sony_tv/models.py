@@ -73,7 +73,7 @@ class Run(ModelBase):
     stats = None
     if stats == None:
       stats = self.compute_stats()
-      cache.set(key, stats, 10)
+      cache.set(key, stats, 60)
     return stats
 
   def stats_all(self):
