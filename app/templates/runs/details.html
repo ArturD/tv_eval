@@ -6,6 +6,9 @@
   td.wrong-wiki > button.wrong-wiki {
     background: red;
   }
+  td.is_ok > button.is_ok {
+    background: green;
+  }
 </style>
 {% endblock %}
 
@@ -14,14 +17,14 @@
   $(function() {
     var state_pending = 'pending';
     var state_ready = 'ready';
-    $('button.wrong-wiki, button.wrong-page, button.clear-wrongs').each(function() {
+    $('button.wrong-wiki, button.wrong-page, button.is_ok').each(function() {
       var el = $(this);
       var wrong_wiki = true;
       var wrong_page = false;
       if ( el.hasClass('wrong-page') ) {
         wrong_wiki = false;
         wrong_page = true;
-      } else if( el.hasClass('clear-wrongs') ) {
+      } else if( el.hasClass('is_ok') ) {
         wrong_wiki = false;
         wrong_page = false;
       }
@@ -115,10 +118,10 @@
       <td>{{result.episode.episode_title}}</td>
       <td><a href="{{result.url}}">{{result.url}}</a></td>
       <td>{{result.article_quality}}</td>
-      <td class="{%if result.evaluation.wrong_wiki%}wrong-wiki{%endif%} {%if result.evaluation.wrong_page%}wrong-page{%endif%}">
+      <td class="{%if result.evaluation.wrong_wiki%}wrong-wiki{%endif%} {%if result.evaluation.wrong_page%}wrong-page{%endif%} {%if result.evaluation.is_ok%}is_ok{%endif%}">
         <button class="wrong-wiki" data-active="{{result.evaluation.wrong_wiki}}" data-update-url="{{result.evaluation_update_url}}">Wrong Wiki</button>
         <button class="wrong-page" data-active="{{result.evaluation.wrong_page}}" data-update-url="{{result.evaluation_update_url}}">Wrong Page</button>
-        <button class="clear-wrongs" data-update-url="{{result.evaluation_update_url}}">Clear</button>
+        <button class="is_ok" data-update-url="{{result.evaluation_update_url}}">Ok</button>
       </td>
     </tr>
     {% endfor %}

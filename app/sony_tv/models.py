@@ -177,6 +177,9 @@ class MatchEvaluation(ModelBase):
   wrong_wiki = models.BooleanField(default=False)
   wrong_page = models.BooleanField(default=False)
 
+  def is_ok(self):
+    return not self.wrong_wiki and not self.wrong_page
+
   def save(self, *args, **kwargs):
     MatchEvaluationManager.dictionary_cache = None
     super(MatchEvaluation, self).save(*args, **kwargs)
