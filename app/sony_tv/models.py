@@ -70,7 +70,6 @@ class Run(ModelBase):
     from django.core.cache import cache
     key = ('run_stats_%d' % self.pk)
     stats = cache.get(key)
-    stats = None
     if stats == None:
       stats = self.compute_stats()
       cache.set(key, stats, 60)
