@@ -41,7 +41,7 @@
   <tbody>
     {% for aq, stat in run.stats_article_quality %}
       <tr>
-        <td>&gt;= {{aq}}</td>
+        <td>{{aq}}</td>
         <td> {{stat.0}}</td>
         <td> {{stat.1| floatformat:2}} %</td>
       </tr>
