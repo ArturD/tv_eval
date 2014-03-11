@@ -36,8 +36,8 @@ TEMPLATE_DIRS = (
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '/tmp/tv_eval_django_cache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'tv_eval_cache',
     }
 }
 
