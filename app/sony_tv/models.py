@@ -59,11 +59,23 @@ class Run(ModelBase):
       stats['all_percent'] = 100
       stats['has_result'] = len([x for x in results if x.success])
       stats['has_result_percent'] = round(100.0 * stats['has_result'] / stats['all'], 2)
+      stats['is_evaluated'] = len([x for x in results if x.success and x.evaluation() is not None])
+      stats['is_evaluated_percent'] = 100.0
+      stats['is_evaluated_wrong_wiki'] = len([x for x in results if x.success and x.evaluation() is not None and x.evaluation().wrong_wiki])
+      stats['is_evaluated_wrong_wiki_percent'] = round(100.0 * stats['is_evaluated_wrong_wiki'] / (stats['is_evaluated']+0.01), 2)
+      stats['is_evaluated_wrong_page'] = len([x for x in results if x.success and x.evaluation() is not None and x.evaluation().wrong_page])
+      stats['is_evaluated_wrong_page_percent'] = round(100.0 * stats['is_evaluated_wrong_page'] / (stats['is_evaluated']+0.01), 2)
     else:
       stats['all'] = '-'
       stats['all_percent'] = '-'
       stats['has_result'] = '-'
       stats['has_result_percent'] = '-'
+      stats['is_evaluated'] = '-'
+      stats['is_evaluated_percent'] = '-'
+      stats['is_evaluated_wrong_wiki'] = '-'
+      stats['is_evaluated_wrong_wiki_percent'] = '-'
+      stats['is_evaluated_wrong_page'] = '-'
+      stats['is_evaluated_wrong_page_percent'] = '-'
     return stats
 
   def get_stats(self):
@@ -86,6 +98,24 @@ class Run(ModelBase):
 
   def stats_has_result_percent(self):
     return self.get_stats()['has_result_percent']
+
+  def stats_is_evaluated(self):
+    return self.get_stats()['is_evaluated']
+
+  def stats_is_evaluated_percent(self):
+    return self.get_stats()['is_evaluated_percent']
+
+  def stats_is_evaluated_wrong_page(self):
+    return self.get_stats()['is_evaluated_wrong_page']
+
+  def stats_is_evaluated_wrong_page_percent(self):
+    return self.get_stats()['is_evaluated_wrong_page_percent']
+
+  def stats_is_evaluated_wrong_wiki(self):
+    return self.get_stats()['is_evaluated_wrong_wiki']
+
+  def stats_is_evaluated_wrong_wiki_percent(self):
+    return self.get_stats()['is_evaluated_wrong_wiki_percent']
 
   def stats_article_quality(self):
     results = self.result_set.filter(success=True).all()
