@@ -69,11 +69,11 @@ class Run(ModelBase):
   def get_stats(self):
     from django.core.cache import cache
     key = ('run_stats_%d' % self.pk)
-    #stats = cache.get(key)
+    stats = cache.get(key)
     stats = None
     if stats == None:
       stats = self.compute_stats()
-      cache.set(key, stats)
+      cache.set(key, stats, 10)
     return stats
 
   def stats_all(self):
