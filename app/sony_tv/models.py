@@ -124,6 +124,10 @@ class Result(ModelBase):
     else:
       return None
 
+  def evaluation_update_url(self):
+    from django.core.urlresolvers import reverse
+    return reverse('sony_tv.views.evaluate_result', args=[str(self.id)])
+
   def evaluate(self, wrong_wiki, wrong_page):
     current = self.evaluation()
     if current is None:

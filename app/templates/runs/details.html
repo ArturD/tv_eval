@@ -1,5 +1,53 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<style>
+  td.wrong-page > button.wrong-page,
+  td.wrong-wiki > button.wrong-wiki {
+    background: red;
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(function() {
+    var state_pending = 'pending';
+    var state_ready = 'ready';
+    $('button.wrong-wiki, button.wrong-page, button.clear-wrongs').each(function() {
+      var el = $(this);
+      var wrong_wiki = true;
+      var wrong_page = false;
+      if ( el.hasClass('wrong-page') ) {
+        wrong_wiki = false;
+        wrong_page = true;
+      } else if( el.hasClass('clear-wrongs') ) {
+        wrong_wiki = false;
+        wrong_page = false;
+      }
+      $(el).click(function() {
+        var container = $(el).parent('td');
+        var updateUrl = $(el).data('update-url');
+        if (container.data('state') != state_pending) {
+          container.data('state', state_pending);
+          $.post(updateUrl, {wrong_wiki: wrong_wiki, wrong_page: wrong_page})
+          .success(function() {
+            container.data('state', state_ready);
+            container.removeClass("wrong-wiki");
+            container.removeClass("wrong-page");
+            if (wrong_wiki) container.addClass("wrong-wiki");
+            if (wrong_page) container.addClass("wrong-page");
+          })
+          .fail(function() {
+            alert('update failed!');
+          })
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}
+
 {% block content %}
 <h1>Run Report</h1>
 <b>API:</b> {{run.url}}<br/>
@@ -57,6 +105,7 @@
       <td>Episode</td>
       <td>URL</td>
       <td>AQ</td>
+      <td>Errors</td>
     </tr>
   </thead>
   <tbody>
@@ -66,6 +115,11 @@
       <td>{{result.episode.episode_title}}</td>
       <td><a href="{{result.url}}">{{result.url}}</a></td>
       <td>{{result.article_quality}}</td>
+      <td class="{%if result.evaluation.wrong_wiki%}wrong-wiki{%endif%} {%if result.evaluation.wrong_page%}wrong-page{%endif%}">
+        <button class="wrong-wiki" data-active="{{result.evaluation.wrong_wiki}}" data-update-url="{{result.evaluation_update_url}}">Wrong Wiki</button>
+        <button class="wrong-page" data-active="{{result.evaluation.wrong_page}}" data-update-url="{{result.evaluation_update_url}}">Wrong Page</button>
+        <button class="clear-wrongs" data-update-url="{{result.evaluation_update_url}}">Clear</button>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
