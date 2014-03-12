@@ -38,8 +38,10 @@
             container.data('state', state_ready);
             container.removeClass("wrong-wiki");
             container.removeClass("wrong-page");
+            container.removeClass("is_ok");
             if (wrong_wiki) container.addClass("wrong-wiki");
-            if (wrong_page) container.addClass("wrong-page");
+            else if (wrong_page) container.addClass("wrong-page");
+            else container.addClass("is_ok");
           })
           .fail(function() {
             alert('update failed!');
